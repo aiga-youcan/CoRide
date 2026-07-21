@@ -13,6 +13,9 @@ class Entreprise extends Model
         'nom',
     ];
 
+
+    
+
     public function users()
     {
         return $this->hasMany(User::class);

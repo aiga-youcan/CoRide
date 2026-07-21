@@ -18,6 +18,7 @@ class Trajet extends Model
         'jours_recurrence',
     ];
 
+    
     // Un trajet appartient à un conducteur (User)
     public function conducteur()
     {
