@@ -48,5 +48,28 @@
                 {{ __('Register') }}
             </x-primary-button>
         </div>
+
+        <div class="mt-4">
+    <label for="entreprise">Entreprise</label>
+    <input id="entreprise" type="text" name="entreprise" class="block mt-1 w-full" required>
+</div>
+
+<div class="mt-4">
+    <label for="ville_residence">Ville de résidence</label>
+    <input id="ville_residence" type="text" name="ville_residence" class="block mt-1 w-full" required>
+</div>
+
+<div class="mt-4">
+    <label for="role">Rôle</label>
+
+    <select name="role" class="block mt-1 w-full">
+        <option value="passager">Passager</option>
+        <option value="conducteur">Conducteur</option>
+        <option value="les deux">Les deux</option>
+    </select>
+</div>
+
+
+
     </form>
 </x-guest-layout>
