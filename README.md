@@ -1,59 +1,180 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CoRide – Application Web Laravel de Covoiturage Inter-Entreprise avec Matching IA
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Description
 
-## About Laravel
+CoRide est une application web développée avec Laravel permettant aux employés d'entreprises partenaires de partager leurs trajets domicile-travail.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+L'application permet de :
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+* Authentifier les employés avec Laravel Breeze.
+* Publier des trajets.
+* Rechercher des trajets disponibles.
+* Réserver une place.
+* Gérer les réservations.
+* Calculer un score de compatibilité entre un passager et un trajet grâce à une brique IA.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+# Technologies utilisées
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+* Laravel 13
+* PHP 8.3
+* MySQL
+* Laravel Breeze
+* Blade
+* Eloquent ORM
+* Tailwind CSS
+* Laravel AI SDK (installé)
+* Git & GitHub
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+# Architecture du projet
 
-## Agentic Development
+Le projet suit l'architecture MVC de Laravel.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Models
 
-```bash
-composer require laravel/boost --dev
+* User
+* Trajet
+* Reservation
+* Ville
 
-php artisan boost:install
+## Controllers
+
+* DashboardController
+* TrajetController
+* ReservationController
+* Auth Controllers (Laravel Breeze)
+
+## Requests
+
+Les Form Requests permettent de valider les données utilisateur avant leur enregistrement.
+
+Exemples :
+
+* StoreReservationRequest
+* UpdateReservationStatusRequest
+
+## Relations Eloquent
+
+User
+
+* possède plusieurs trajets (conducteur)
+* possède plusieurs réservations (passager)
+
+Trajet
+
+* appartient à un conducteur
+* possède plusieurs réservations
+
+Reservation
+
+* appartient à un trajet
+* appartient à un passager
+
+---
+
+# Brique IA
+
+L'objectif principal de la brique IA est de déterminer si un trajet est réellement adapté à un passager.
+
+Contrairement à un simple filtre SQL, l'algorithme analyse plusieurs critères.
+
+Critères utilisés :
+
+* Ville de départ
+* Ville d'arrivée
+* Compatibilité des horaires
+* Compatibilité des jours
+* Disponibilité des places
+
+Chaque critère ajoute un nombre de points afin d'obtenir un score final sur 100.
+
+Le résultat généré contient :
+
+* score
+* compatible (Oui / Non)
+* niveau
+* justification
+* horaire suggéré
+
+Exemple :
+
+```json
+{
+    "score":90,
+    "compatible":true,
+    "niveau":"Excellent",
+    "justification":"Même ville de départ, même destination, horaire très proche et jours compatibles.",
+    "horaire_suggere":"08:15"
+}
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Le résultat est enregistré dans la colonne **ai_result** de la table **reservations** grâce à un Cast Laravel (AiResultCast).
 
-## Contributing
+Il est ensuite affiché dans la page de détail de la réservation.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+# Fonctionnement du Matching
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Le passager choisit un trajet.
+2. Les informations du trajet et du passager sont comparées.
+3. CalculateCompatibility calcule le score.
+4. MatchingAgent retourne le résultat.
+5. Le résultat est sauvegardé dans la réservation.
+6. Le score est affiché dans l'interface.
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# Base de données
 
-## License
+Principales tables :
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# CoRide
+* users
+* entreprises
+* villes
+* trajets
+* reservations
+
+---
+
+# Installation
+
+```bash
+git clone https://github.com/aiga-youcan/CoRide.git
+
+cd CoRide
+
+composer install
+
+npm install
+
+cp .env.example .env
+
+php artisan key:generate
+
+php artisan migrate
+
+npm run build
+
+php artisan serve
+```
+
+---
+
+# Fonctionnalités
+
+* Authentification
+* Gestion des trajets
+* Gestion des réservations
+* Tableau de bord
+* Validation avec Form Requests
+* Relations Eloquent
+* Calcul de compatibilité
+* Affichage du score IA
+* Architecture MVC
+
+---
+Framework : Laravel 13.
