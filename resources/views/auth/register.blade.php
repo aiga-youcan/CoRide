@@ -1,0 +1,73 @@
+<x-guest-layout>
+    <form method="POST" action="{{ route('register') }}">
+        @csrf
+
+        <!-- Name -->
+        <div>
+            <x-input-label for="name" :value="__('Name')" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+        </div>
+
+        <!-- Email Address -->
+        <div class="mt-4">
+            <x-input-label for="email" :value="__('Email')" />
+            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
+            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        </div>
+
+        <!-- Entreprise -->
+        <div class="mt-4">
+            <x-input-label for="entreprise" :value="__('Entreprise')" />
+            <x-text-input id="entreprise" class="block mt-1 w-full" type="text" name="entreprise" :value="old('entreprise')" autocomplete="organization" />
+            <x-input-error :messages="$errors->get('entreprise')" class="mt-2" />
+        </div>
+
+        <!-- Ville de résidence -->
+        <div class="mt-4">
+            <x-input-label for="ville_residence" :value="__('Ville de résidence')" />
+            <x-text-input id="ville_residence" class="block mt-1 w-full" type="text" name="ville_residence" :value="old('ville_residence')" />
+            <x-input-error :messages="$errors->get('ville_residence')" class="mt-2" />
+        </div>
+
+        <!-- Rôle -->
+        <div class="mt-4">
+            <x-input-label for="role" :value="__('Rôle')" />
+            <select id="role" name="role" class="block mt-1 w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                <option value="passager" {{ old('role') === 'passager' ? 'selected' : '' }}>Passager</option>
+                <option value="conducteur" {{ old('role') === 'conducteur' ? 'selected' : '' }}>Conducteur</option>
+                <option value="les_deux" {{ old('role') === 'les_deux' ? 'selected' : '' }}>Les deux</option>
+            </select>
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
+
+        <!-- Password -->
+        <div class="mt-4">
+            <x-input-label for="password" :value="__('Password')" />
+            <x-text-input id="password" class="block mt-1 w-full"
+                            type="password"
+                            name="password"
+                            required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="mt-4">
+            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+            <x-text-input id="password_confirmation" class="block mt-1 w-full"
+                            type="password"
+                            name="password_confirmation" required autocomplete="new-password" />
+            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        </div>
+
+        <div class="flex items-center justify-end mt-4">
+            <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('login') }}">
+                {{ __('Already registered?') }}
+            </a>
+
+            <x-primary-button class="ms-4">
+                {{ __('Register') }}
+            </x-primary-button>
+        </div>
+    </form>
+</x-guest-layout>
